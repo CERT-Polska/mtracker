@@ -1,0 +1,12 @@
+[tool.black]
+target_version = ['py37']
+exclude = '''
+(
+  /(
+    | \.git
+    | \.mypy_cache
+    | \venv
+    | emotet_native_pb2.py
+  )
+)
+'''

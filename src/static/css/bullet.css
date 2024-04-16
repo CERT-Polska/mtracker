@@ -1,0 +1,12 @@
+.bullet { font: 10px sans-serif; }
+.bullet .marker { stroke: black; stroke-width: 2px; }
+.bullet .tick text { stroke: white; stroke-width: .5px; }
+.bullet .range.s0 { fill: none; }
+.bullet .range.s1 { fill: none; }
+.bullet .range.s2 { fill: none; }
+.bullet .measure.s3 { fill: #62c462; }
+.bullet .measure.s2 { fill: #5bc0de; }
+.bullet .measure.s1 { fill: #f89406; }
+.bullet .measure.s0 { fill: #ee5f5b; }
+.bullet .title { font-size: 14px; font-weight: bold; }
+.bullet .subtitle { fill: #999; }

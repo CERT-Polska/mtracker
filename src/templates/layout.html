@@ -1,0 +1,33 @@
+<html class=" ">
+  <head>
+    <meta charset="utf8">
+    <title>mtracker</title>
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/bootswatch.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+    <link rel="stylesheet" href="/css/bullet.css">
+    <link rel="stylesheet" href="/css/flag-icon.css">
+  </head>
+  <body>
+    <div id="content">
+      <div class="container">
+        <nav class="navbar navbar-default">
+          <div class="container">
+            <div class="navbar-header"><a class="navbar-brand" href="{{url_for('index')}}">mtracker</a></div>
+            <ul class="nav navbar-nav">
+              <li role="presentation"><a action="push" href="{{url_for('trackers')}}">trackers</a></li>
+              <li role="presentation"><a action="push" href="{{url_for('bots')}}">bots</a></li>
+              <li role="presentation"><a action="push" href="{{url_for('tasks')}}">tasks</a></li>
+              <li role="presentation"><a action="push" href="{{url_for('results')}}">results</a></li>
+              <li role="presentation"><a action="push" href="{{url_for('proxies')}}">proxies</a></li>
+            </ul>
+          </div>
+        </nav>
+        <div id="real-content" class="well">
+          {% block content %}
+          {% endblock %}
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,9 @@
+{% extends 'layout.html' %}
+{% from "macros/results.html" import results_table %}
+{% from "macros/pagination.html" import paginate %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('results')}}">Results</a></h1>
+{{results_table(rows)}}
+{{paginate("/results", page, pages)}}
+{% endblock %}

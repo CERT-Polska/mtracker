@@ -1,0 +1,25 @@
+{% extends 'layout.html' %}
+{% from "macros/results.html" import results_table %}
+{% from "macros/utils.html" import showtime %}
+{% from "macros/status.html" import showstatus %}
+
+{% block content %}
+<h1 class="text-center">Task {{entity.task_id}}</h1>
+
+<dl class="dl-horizontal">
+  <dt>bot</dt>
+  <dd><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.bot_id}}</a></dd>
+
+  <dt>report time</dt>
+  <dd>{{showtime(entity.report_time)}}</dd>
+  
+  <dt>status</dt>
+  <dd>{{showstatus(entity.status, "/tasks")}}</dd>
+</dl>
+
+<h2>Results</h2>
+{{results_table(results)}}
+
+<h2>Execution log</h2>
+<pre class="pre-scrollable"><code>{{log}}</code></pre>
+{% endblock %}

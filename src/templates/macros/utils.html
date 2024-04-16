@@ -1,0 +1,13 @@
+{% macro showtime(time) %}
+{{time.strftime("%Y-%m-%d %H:%M:%S")}}
+{% endmacro %}
+
+{% macro cap_length(text, maxlen)%}
+<span title="{{text}}">
+  {% if text and text|length > maxlen %}
+    {{text[:maxlen]}}...
+  {%else%}
+    {{text}}
+  {%endif%}
+</span>
+{% endmacro %}

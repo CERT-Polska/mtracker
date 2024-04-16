@@ -1,0 +1,53 @@
+{% set classnames = {
+    "alive": "text-success",
+    "new": "text-success",
+    "working": "text-success",
+    "inprogress": "text-info",
+    "failing": "text-warning",
+    "crashed": "text-danger",
+    "archived": "text-muted",
+} %}
+
+{% macro statuscolor(statusname, text) %}
+<span class="{{ classnames[statusname] }}">{{text}}</span>
+{% endmacro %}
+
+{% macro showstatus(statusname, base='') %}
+<a href="{{base}}?status={{statusname}}" class="{{ classnames[statusname] }}">{{statusname}}</a>
+{% endmacro %}
+
+{% macro showstatusbtn(statusname) %}
+{% set active = request.args.get('status') == statusname %}
+{% set activeclass = "active nomouse" if active else "" %}
+<a href="?status={{statusname}}" type="button" class="btn btn-default {{ classnames[statusname] }} {{activeclass}}">{{statusname}}</a>
+{% endmacro %}
+
+{% macro clearstatusbtn(statusname) %}
+{% set active = request.args.get('status') == None %}
+{% set activeclass = "active nomouse" if active else "" %}
+<a href="?" type="button" class="btn btn-default {{activeclass}}">✖️</a>
+{% endmacro %}
+
+{% macro statusfilter() %}
+<div class="text-center" style="margin-bottom: 30px">
+  <div class="btn-group" role="group">
+    {{showstatusbtn("working")}}
+    {{showstatusbtn("inprogress")}}
+    {{showstatusbtn("failing")}}
+    {{showstatusbtn("crashed")}}
+    {{showstatusbtn("archived")}}
+    {{clearstatusbtn()}}
+  </div>
+</div>
+{% endmacro %}
+
+{% macro familyfilter() %}
+{% if request.args.get('family') %}
+<div class="text-center" style="margin-bottom: 30px">
+  <div class="btn-group" role="group">
+    <a type="button" class="btn btn-default active nomouse">Family: {{request.args.get('family')}}</a>
+    <a href="?" type="button" class="btn btn-default">✖️</a>
+  </div>
+</div>
+{% endif %}
+{% endmacro %}

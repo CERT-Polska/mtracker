@@ -1,0 +1,37 @@
+{#
+Some jinja2 programming, sorry. This is not as complicated as it may look like.
+The idea is to generate paging that looks like this:
+
+[<<] [<] [1] ... [1001] [1002] [1003 (active)] [1004] [1005] ... [2000] [>] [>>]
+
+So two pages before the current page, two pages after, next/pref/first/last buttons.
+All the complications here are due to special case handling (the first and last few pages).
+#}
+
+{% macro paginate(baseurl, page, pages) %}
+{% set url = baseurl + "?" %}
+{% if request.args.get('status') %}
+{%   set url = url + "status=" + request.args.get('status') + "&" %}
+{% endif %}
+<div class="text-center">
+    <ul class="pagination pagination-sm">
+      <li><a href="{{url}}page=1">«</a></li>
+      <li><a href="{{url}}page={{[page-1, 1] | max}}">‹</a></li>
+      <li {% if page == 1 %}class="active"{%endif%}><a href="{{url}}page=1">1</a></li>
+      {% if page > 4 %}
+      <li class="disabled nomouse"><a tabindex="-1">…</a></li>
+      {% endif %}
+      {% for p in range([2, page - 2]|max, [page + 3, pages]|min) %}
+      <li {% if page == p %}class="active"{%endif%}><a href="{{url}}page={{p}}">{{p}}</a></li>
+      {% endfor %}
+      {% if page < pages-3 %}
+      <li class="disabled nomouse"><a tabindex="-1">…</a></li>
+      {% endif %}
+      {% if pages != 1 %}
+      <li {% if page == pages %}class="active"{%endif%}><a href="{{url}}page={{pages}}">{{pages}}</a></li>
+      {% endif %}
+      <li><a href="{{url}}page={{[page+1, pages] | min}}">›</a></li>
+      <li><a href="{{url}}page={{pages}}">»</a></li>
+    </ul>
+  </div>
+{% endmacro %}

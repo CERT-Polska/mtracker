@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% from "macros/tasks.html" import tasks_table %}
+{% from "macros/pagination.html" import paginate %}
+{% from "macros/status.html" import statusfilter %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('tasks')}}">Tasks</a></h1>
+{{statusfilter()}}
+{{tasks_table(rows)}}
+{{paginate("/tasks", page, pages)}}
+{% endblock %}

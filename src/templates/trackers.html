@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% from "macros/pagination.html" import paginate %}
+{% from "macros/trackers.html" import trackers_table %}
+{% from "macros/status.html" import statusfilter, familyfilter %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('trackers')}}">Trackers</a></h1>
+{{statusfilter()}}
+{{familyfilter()}}
+{{trackers_table(rows)}}
+{{paginate("/trackers", page, pages)}}
+{% endblock %}

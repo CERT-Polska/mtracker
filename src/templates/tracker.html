@@ -1,0 +1,30 @@
+{% extends 'layout.html' %}
+{% from "macros/bots.html" import bots_table %}
+{% from "macros/status.html" import showstatus %}
+
+{% block content %}
+<h1 class="text-center">Tracker {{entity.tracker_id}}</h1>
+
+<form action="{{url_for('tracker', tracker_id=entity.tracker_id)}}" method="post" class="text-center" style="margin-bottom: 30px">
+  <div class="btn-group" role="group">
+    <input type="submit" value="resetSpree" name="action" class="btn btn-default">
+    <input type="submit" value="archive" name="action" class="btn btn-default">
+    <input type="submit" value="revive" name="action" class="btn btn-default">
+    <input type="submit" value="rerun" name="action" class="btn btn-default">
+  </div>
+</form>
+
+<dl class="dl-horizontal">
+  <dt>static config</dt>
+  <dd><a class="text-monospace" href="{{entity.config_url}}">{{entity.config_hash}}</a></dd>
+
+  <dt>family</dt>
+  <dd><a href="{{url_for('trackers', family=entity.family)}}">{{entity.family}}</a></dd>
+  
+  <dt>status</dt>
+  <dd>{{showstatus(entity.status, "/trackers")}}</dd>
+</dl>
+
+<h2>Bots</h2>
+{{ bots_table(bots)}}
+{% endblock %}

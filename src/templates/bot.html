@@ -1,0 +1,49 @@
+{% extends 'layout.html' %}
+
+{% from "macros/tasks.html" import tasks_table %}
+{% from "macros/utils.html" import showtime %}
+{% from "macros/status.html" import showstatus %}
+
+{% block content %}
+<h1 class="text-center">Bot {{entity.family}}_{{entity.bot_id}}</h1>
+
+<form action="/bots/{{entity.bot_id}}" method="post" class="text-center" style="margin-bottom: 30px">
+  <div class="btn-group" role="group">
+    <input type="submit" value="resetSpree" name="action" class="btn btn-default">
+    <input type="submit" value="archive" name="action" class="btn btn-default">
+    <input type="submit" value="revive" name="action" class="btn btn-default">
+    <input type="submit" value="rerun" name="action" class="btn btn-default">
+  </div>
+</form>
+
+<dl class="dl-horizontal">
+  <dt>tracker</dt>
+  <dd><a href="{{url_for('tracker', tracker_id=entity.tracker_id)}}">{{entity.tracker_id}}</a></dd>
+
+  <dt>family</dt>
+  <dd><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></dd>
+
+  <dt>status</dt>
+  <dd>{{showstatus(entity.status, "/bots")}}</dd>
+
+  <dt>failing spree</dt>
+  <dd>{{entity.failing_spree}}</dd>
+
+  <dt>country</dt>
+  <dd>{{entity.country}}</dd>
+
+  <dt>next execution</dt>
+  <dd>{{showtime(entity.next_execution)}}</dd>
+
+  <dt>last error</dt>
+  <dd>{{entity.last_error}}</dd>
+</dl>
+
+<h2>Tasks</h2>
+{{tasks_table(tasks)}}
+
+{% if last_task_log %}
+<h2>Last task log</h2>
+<pre class="pre-scrollable"><code>{{last_task_log}}</code></pre>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,17 @@
+div.no-items {
+    text-align: center;
+    color: #888;
+}
+
+.text-monospace {
+    font-family: Courier New, Courier, monospace
+}
+
+.nomouse {
+    pointer-events: none;
+}
+
+.mb-0 {
+    /* Naming convention from bootstrap 4: https://getbootstrap.com/docs/4.1/utilities/spacing/ */
+    margin-bottom: 0px;
+}

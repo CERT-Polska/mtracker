@@ -1,0 +1,69 @@
+version: '3'
+services:
+  postgres:
+    restart: always
+    image: postgres:10.4
+    ports:
+    - "127.0.0.1:5432:5432"
+    volumes:
+    # If you are using WSL2, you'll need to set the volume folder
+    # to a location on your WSL2 file system (i.e not under `/mnt/`)
+    - "./data/postgres:/var/lib/postgresql/data"
+  scheduler:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/scheduler.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+    links:
+    - redis
+    - postgres
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/web.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+      - LOG_DIRECTORY=/opt/logs
+      - PROXY_DEFAULT_PROXY
+      - PROXY_URL
+      - PROXY_METHOD
+      - PROXY_PATH
+      - MWDB_URL
+      - MWDB_TOKEN
+    ports:
+    - "127.0.0.1:80:5000"
+    volumes:
+    - "./data/logs:/opt/logs"
+    links:
+    - redis
+    - postgres
+  worker:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/worker.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+      - LOG_DIRECTORY=/opt/logs
+      - PROXY_DEFAULT_PROXY
+      - PROXY_URL
+      - PROXY_METHOD
+      - PROXY_PATH
+      - MWDB_URL
+      - MWDB_TOKEN
+    volumes:
+    - "./data/logs:/opt/logs"
+    - "./src/private_modules:/usr/src/app/src/modules"
+    links:
+    - redis
+    - postgres
+    command: bash -c "pip install -r /usr/src/app/src/modules/requirements.txt; python3 -m mtracker.worker /usr/src/app/src/modules"
+  redis:
+    restart: always
+    image: redis

@@ -1,0 +1,26 @@
+{% from "macros/status.html" import showstatus, statuscolor %}
+
+{% macro trackers_table(rows) %}
+<table class="table">
+  <tr>
+      <th>tracker</th>
+      <th>family</th>
+      <th>static config</th>
+      <th>bots</th>
+      <th>status</th>
+  </tr>
+  {% for entity in rows %}
+  <tr>
+    <td><a href="{{url_for('tracker', tracker_id=entity.tracker_id)}}">{{entity.tracker_id}}</a></td>
+    <td><a href="{{url_for('trackers', family=entity.family)}}">{{entity.family}}</a></td>
+    <td><a class="text-monospace" href="{{entity.config_url}}">{{entity.config_hash[:16]}}...</a></td>
+    <td>
+      {% for bot in entity.bots %}
+      <a href="{{url_for('bot', bot_id=bot.bot_id)}}">{{statuscolor(bot.status, bot.bot_id)}}</a>
+      {% endfor %}
+    </td>
+    <td>{{showstatus(entity.status)}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}

@@ -1,0 +1,34 @@
+{% macro dashboard_chart(alive, inprogress, failing, crashed, archived) %}
+{% set total = alive + inprogress + failing + crashed %}
+{% set width_px = 860 %}
+<div class="text-center">
+  <svg class="bullet" width="{{width_px}}" height="25">
+    <rect class="range s0" width="{{width_px}}" height="25" x="0"></rect>
+    {% set left = 0 %}
+    <rect class="measure s3" width="{{width_px * alive / total}}" height="8" x="{{left}}" y="8"></rect>
+    {% set left = left + (alive / total * width_px) %}
+    <rect class="measure s2" width="{{width_px * inprogress / total}}" height="8" x="{{left}}" y="8"></rect>
+    {% set left = left + (inprogress / total * width_px) %}
+    <rect class="measure s1" width="{{width_px * failing / total}}" height="8" x="{{left}}" y="8"></rect>
+    {% set left = left + (failing / total * width_px) %}
+    <rect class="measure s0" width="{{width_px * crashed / total}}" height="8" x="{{left}}" y="8"></rect>
+  </svg>
+  <div>
+    <div style="margin-right: 16px; display: inline;">
+      <a href="{{url_for('trackers', status='working')}}" class="text-success">{{alive}}</a> alive
+    </div>
+    <div style="margin-right: 16px; display: inline;">
+      <a href="{{url_for('trackers', status='inprogress')}}" class="text-info">{{inprogress}}</a> inprogress
+    </div>
+    <div style="margin-right: 16px; display: inline;">
+      <a href="{{url_for('trackers', status='failing')}}" class="text-warning">{{failing}}</a> failing
+    </div>
+    <div style="margin-right: 16px; display: inline;">
+      <a href="{{url_for('trackers', status='crashed')}}" class="text-danger">{{crashed}}</a> crashed
+    </div>
+    <div style="margin-right: 16px; display: inline;">
+      <a href="{{url_for('trackers', status='archived')}}" class="text-muted">{{archived}}</a> archived
+    </div>
+  </div>
+</div>
+{% endmacro %}

@@ -1,0 +1,11 @@
+{% extends 'layout.html' %}
+{% from "macros/dashboard_chart.html" import dashboard_chart %}
+{% from "macros/tasks.html" import tasks_table %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('index')}}">Dashboard</a></h1>
+{{dashboard_chart(counters.alive, counters.progress, counters.failing, counters.crashed, counters.archived)}}
+
+<h3 class="text-center">Recent tasks</h3>
+{{tasks_table(tasks)}}
+{% endblock %}

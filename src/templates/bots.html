@@ -1,0 +1,12 @@
+{% extends 'layout.html' %}
+{% from "macros/bots.html" import bots_table %}
+{% from "macros/pagination.html" import paginate %}
+{% from "macros/status.html" import statusfilter, familyfilter %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('bots')}}">Bots</a></h1>
+{{statusfilter()}}
+{{familyfilter()}}
+{{bots_table(rows)}}
+{{paginate("/bots", page, pages)}}
+{% endblock %}

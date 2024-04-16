@@ -1,0 +1,43 @@
+{% from "macros/utils.html" import showtime, cap_length, mtracker_url %}
+{% from "macros/status.html" import showstatus %}
+
+{% macro bots_table(rows) %}
+<table class="table">
+  <tr>
+      <th>bot</th>
+      <th>family</th>
+      <th>last error</th>
+      <th>status</th>
+      <th>next execution</th>
+      <th>actions</th>
+  </tr>
+  {% for entity in rows %}
+  <tr>
+    <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.family}}_{{entity.bot_id}}</a></td>
+    <td><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></td>
+    <td>{{cap_length(entity.last_error, 60)}}</td>
+    <td>
+      {{showstatus(entity.status)}}
+      {% if entity.status == 'failing' %}({{entity.failing_spree}}){% endif %}
+    </td>
+    <td>
+      {% if entity.status != 'crashed' and entity.status != 'archived' %}
+      {{showtime(entity.next_execution)}}
+      {% endif %}
+    </td>
+    <td>
+      <form action="/bots/{{entity.bot_id}}" method="post" class="text-center mb-0">
+        <span class="btn-group btn-group-xs" role="group">
+          {% if entity.status != 'archived' %}
+          <input type="submit" value="archive" name="action" class="btn btn-default">
+          {% endif %}
+          {% if entity.status != 'inprogress' %}
+          <input type="submit" value="rerun" name="action" class="btn btn-default">
+          {% endif %}
+        </span>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}

@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h1 class="text-center"><a href="{{url_for('proxies')}}">Proxies</a></h1>
+
+<a href="{{url_for('proxies_update')}}" class="btn btn-default" type="button">Update</a>
+
+<table class="table">
+  <tr>
+      <th>country</th>
+      <th>host</th>
+  </tr>
+  {% for entity in rows %}
+  <tr>
+    <td>{{entity.country}}</td>
+    <td>{{entity.host}}:{{entity.port}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endblock %}

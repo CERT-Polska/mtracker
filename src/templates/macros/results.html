@@ -1,0 +1,22 @@
+{% from "macros/utils.html" import showtime %}
+
+{% macro results_table(rows) %}
+<table class="table">
+  <tr class="row">
+      <th>task</th>
+      <th>type</th>
+      <th>result</th>
+      <th>sha256</th>
+      <th>upload time</th>
+  </tr>
+  {% for entity in rows %}
+  <tr class="row">
+    <td><a href="{{url_for('task', task_id=entity.task_id)}}">{{entity.task_id}}</a></td>
+    <td>{{entity.result_type}}</td>
+    <td><a href="{{entity.mwdb_url}}">{{entity.name}}</a></td>
+    <td><a class="text-monospace" href="{{entity.mwdb_url}}">{{entity.sha256[:16]}}</a></td>
+    <td>{{showtime(entity.upload_time)}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endmacro %}

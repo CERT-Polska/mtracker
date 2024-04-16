@@ -1,0 +1,12 @@
+mtracker.ini
+venv
+*.pyc
+__pycache__/
+.mypy_cache/
+.vscode
+results
+data
+.env
+src/private_modules
+build/
+*.egg-info
