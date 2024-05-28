@@ -128,6 +128,12 @@ def track_config(family: str, config_dict: Dict) -> Dict:
     return {"new": new_tracker, "trackerId": tracker_id, "botIds": bot_ids}
 
 
+def proxy_count():
+    with model.database_connection() as connection:
+        proxies = model.Proxy.fetch_all(connection.cursor())
+        return len(proxies)
+
+
 @app.route("/api/trackers", methods=["POST"])
 def track_config_api() -> Response:
     """Tracker creation API.
@@ -135,6 +141,11 @@ def track_config_api() -> Response:
     Config key should contain a config (as found in mwdb), and other
     keys are ignored.
     """
+    if proxy_count() == 0:
+        return {
+            "error": "No proxies configured. Edit the config, and go to /proxies to update."
+        }, 500
+
     data = request.get_json()
     config = data["config"]
     family = config.get("type")
@@ -149,6 +160,11 @@ def track_config_old(dhash: str) -> Response:
     """Legacy tracker submission API, TODO to be removed before open-sourcing
     :param dhash: config dhash, to be downloaded from mwdb
     """
+    if proxy_count() == 0:
+        return {
+            "error": "No proxies configured. Edit the config, and go to /proxies to update."
+        }, 500
+
     dhash = dhash.lower()
 
     if not re.match("^[a-f0-9]+$", dhash):
