@@ -20,27 +20,27 @@ Finally there is a scheduler, that makes sure tasks are executed in a regular in
 
 All the components communicate through the shared postgres database to manage the state, but the results are only uploaded to [mwdb-core](https://github.com/CERT-Polska/mwdb-core/). Mtracker is tightly tied to MWDB. Users who want to customize this behaviour and use another backend need to override the BotModule class and provide their own implmentation of appropriate methods.
 
-### Installation: docker-compose
+### Installation: docker compose
 
-The easiest way to setup mtracker is using a provided docker-compose file
+The easiest way to setup mtracker is using a provided docker compose file
 
 ```bash
-docker-compose build
+docker compose build
 cp .env.dist .env
 vim .env  # set mwdb token and proxy configuration
 mkdir src/private_modules  # a place for your modules
 echo "trackers = {}" > src/private_modules/__init__.py  # empty module list
-docker-compose up # You can use '-d' to detach
+docker compose up # You can use '-d' to detach
 
 # finally, in another tab apply migrations from db/folder in order, using:
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/000_init.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/001_bots_tasks.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/002_update_bots.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/003_bots_add_last_error.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/004_bots_add_family.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/005_results.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/006_add_proxy.sql
-docker-compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/007_alter_proxy_add_username_password.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/000_init.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/001_bots_tasks.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/002_update_bots.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/003_bots_add_last_error.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/004_bots_add_family.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/005_results.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/006_add_proxy.sql
+docker compose exec -T postgres psql -U mtracker3 --dbname mtracker3 < db/007_alter_proxy_add_username_password.sql
 ```
 
 You can now access the web interface on port 80.
