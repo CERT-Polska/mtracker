@@ -1,5 +1,5 @@
 {% macro dashboard_chart(alive, inprogress, failing, crashed, archived) %}
-{% set total = alive + inprogress + failing + crashed %}
+{% set total = [alive + inprogress + failing + crashed, 1]|max %}
 {% set width_px = 860 %}
 <div class="text-center">
   <svg class="bullet" width="{{width_px}}" height="25">

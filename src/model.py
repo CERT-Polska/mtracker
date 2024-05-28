@@ -70,11 +70,11 @@ def get_metrics(cur: cursor) -> ServiceMetrics:
 def get_status(cur: cursor) -> Dict[str, Any]:
     cur.execute(
         """SELECT
-        SUM(CASE WHEN status = 'crashed' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN status = 'inprogress' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN status = 'working' OR status = 'new' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN status = 'failing' THEN 1 ELSE 0 END),
-        SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END)
+        coalesce(SUM(CASE WHEN status = 'crashed' THEN 1 ELSE 0 END), 0),
+        coalesce(SUM(CASE WHEN status = 'inprogress' THEN 1 ELSE 0 END), 0),
+        coalesce(SUM(CASE WHEN status = 'working' OR status = 'new' THEN 1 ELSE 0 END), 0),
+        coalesce(SUM(CASE WHEN status = 'failing' THEN 1 ELSE 0 END), 0),
+        coalesce(SUM(CASE WHEN status = 'archived' THEN 1 ELSE 0 END), 0)
         FROM bots"""
     )
     crashed, progress, alive, failing, archived = cur.fetchall()[0]
