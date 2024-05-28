@@ -85,6 +85,8 @@ In both cases, the JSON should look like this (additional fields are allowed):
 
 All the proxies are SOCKS5h proxies. If you don't want to host your own proxies, the easiest solution is to proxy traffic through tor. 
 
+Remember that after starting mtracker you need to go to /proxies endpoint and click "update" for your configuration to have any effect.
+
 ### Module development
 
 Mtracker is just a framework, and **won't work** without implementing modules. See [the documentation](docs/moduledev.md) for more information about module development.

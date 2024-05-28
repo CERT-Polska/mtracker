@@ -12,12 +12,12 @@ from .config import app_config
 
 
 def get_proxies() -> List[Dict[str, Any]]:
-    if ProxyConfig.METHOD == "url":
+    if app_config.proxy.method == "url":
         # Get a list of proxies from defined URL
-        return get(ProxyConfig.URL).json()
-    elif ProxyConfig.METHOD == "file":
+        return get(app_config.proxy.url).json()
+    elif app_config.proxy.method == "file":
         # Read a list of proxies from defined file path
-        with open(ProxyConfig.PATH) as f:
+        with open(app_config.proxy.path) as f:
             return json.load(f)
     raise RuntimeError("Invalid proxy configuration: unknown method")
 
