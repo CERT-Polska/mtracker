@@ -32,7 +32,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
       - REDIS_HOST=redis
-      - LOG_DIRECTORY=/opt/logs
+      - LOG_DIR=/opt/logs
       - PROXY_DEFAULT_PROXY
       - PROXY_URL
       - PROXY_METHOD
@@ -54,7 +54,7 @@ services:
     environment:
       - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
       - REDIS_HOST=redis
-      - LOG_DIRECTORY=/opt/logs
+      - LOG_DIR=/opt/logs
       - PROXY_DEFAULT_PROXY
       - PROXY_URL
       - PROXY_METHOD
