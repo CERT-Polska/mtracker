@@ -18,7 +18,11 @@ from flask import (
     redirect,
     url_for,
 )
-from prometheus_client import Gauge, generate_latest  # type: ignore
+from prometheus_client import (  # type: ignore
+    CONTENT_TYPE_LATEST,
+    Gauge,
+    generate_latest,
+)
 
 from . import model
 from . import scheduler
@@ -68,7 +72,7 @@ def varz() -> Response:
     for status, count in tasks:
         mtracker_tasks.labels(status).set(count)
 
-    return generate_latest()
+    return Response(generate_latest(), mimetype=CONTENT_TYPE_LATEST)
 
 
 def track_config(family: str, config_dict: Dict) -> Dict:
