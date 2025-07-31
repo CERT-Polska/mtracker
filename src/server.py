@@ -161,7 +161,10 @@ def track_config_api() -> Response:
 
 @app.route("/track/<dhash>", methods=["POST"])
 def track_config_old(dhash: str) -> Response:
-    """Legacy tracker submission API, TODO to be removed before open-sourcing
+    """Tracker submission API with mwdb integration.
+    
+    Given config is downloaded from mwdb automatically.
+
     :param dhash: config dhash, to be downloaded from mwdb
     """
     if proxy_count() == 0:
@@ -212,16 +215,17 @@ def get_results() -> Response:
 def get_tasks() -> Response:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
+    status = request.args.get("status")
 
     with model.database_connection() as conn:
         entities = model.TaskView.fetch_all(
-            cur=conn.cursor(), limit=count, start=start
+            cur=conn.cursor(), limit=count, start=start, status=status
         )
     return jsonify([e.serialize() for e in entities])
 
 
 @app.route("/api/tasks/<int:task_id>")
-def get_tass(task_id: int) -> Response:
+def get_task(task_id: int) -> Response:
     with model.database_connection() as conn:
         task = model.TaskView.get_by_id(conn.cursor(), task_id)
     if not task:
@@ -232,6 +236,7 @@ def get_tass(task_id: int) -> Response:
 @app.route("/api/trackers/", methods=["GET"])
 def get_trackers() -> Response:
     status = request.args.get("status")
+    family = request.args.get("family")
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
 
@@ -241,6 +246,7 @@ def get_trackers() -> Response:
             limit=count,
             start=start,
             status=status,
+            family=family,
         )
     return jsonify([e.serialize() for e in entities])
 
@@ -292,6 +298,7 @@ def get_tracker(tracker_id: int) -> Response:
 @app.route("/api/bots/")
 def get_bots() -> Response:
     status = request.args.get("status")
+    family = request.args.get("family")
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
 
@@ -301,6 +308,7 @@ def get_bots() -> Response:
             limit=count,
             start=start,
             status=status,
+            family=family,
         )
 
     return jsonify([e.serialize() for e in entities])
