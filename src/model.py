@@ -191,8 +191,8 @@ class Proxy:
                 "host": new["host"],
                 "port": new["port"],
                 "country": new["country"],
-                "username": new["username"],
-                "password": new["password"],
+                "username": new.get("username"),
+                "password": new.get("password"),
             }
             if n in proxies:
                 delete_list.remove(n)
@@ -248,6 +248,17 @@ class TaskView:
         LEFT JOIN results r ON t.task_id=r.task_id
         INNER JOIN bots b ON b.bot_id=t.bot_id"""
 
+    def serialize(self) -> Dict[str, Any]:
+        return {
+            "taskId": str(self.task_id),
+            "botId": self.bot_id,
+            "startTime": self.report_time.isoformat(),
+            "status": self.status,
+            "resultsNo": self.results_no,
+            "family": self.family,
+            "failReason": self.fail_reason
+        }
+
     @staticmethod
     def get_by_id(cur: cursor, task_id: int) -> Optional["TaskView"]:
         cur.execute(
@@ -263,28 +274,30 @@ class TaskView:
 
     @staticmethod
     def get_by_bot_id(
-        cur: cursor, bot_id: int, count: int = 100, start: int = 0
+        cur: cursor, bot_id: int, count: int = 100, start: int = 0, status: Optional[Status] = None
     ) -> List["TaskView"]:
         cur.execute(
             f"""{TaskView.QUERY}
+            WHERE t.status=%s OR %s IS NULL
             GROUP BY t.task_id
             HAVING t.bot_id=%s
             ORDER BY t.task_id DESC
             LIMIT %s OFFSET %s""",
-            (bot_id, count, start),
+            (status, status, bot_id, count, start),
         )
         data = cur.fetchall()
         return [TaskView(*x) for x in data]
 
     @staticmethod
-    def fetch_all(cur: cursor, limit: int = 100, start: int = 0, status: Optional[Status] = None) -> List["TaskView"]:
+    def fetch_all(cur: cursor, limit: int = 100, start: int = 0, status: Optional[Status] = None, family: Optional[str] = None) -> List["TaskView"]:
         cur.execute(
             f"""{TaskView.QUERY}
             WHERE t.status=%s OR %s IS NULL
             GROUP BY t.task_id
+            HAVING MIN(b.family)=%s or %s IS NULL
             ORDER BY t.task_id DESC
             OFFSET %s LIMIT %s""",
-            (status, status, start, limit),
+            (status, status, family, family, start, limit),
         )
         data = cur.fetchall()
         return [TaskView(*x) for x in data]
@@ -322,7 +335,7 @@ class Task:
         return {
             "taskId": str(self.task_id),
             "botId": self.bot_id,
-            "startTime": str(self.report_time),
+            "startTime": self.report_time.isoformat(),
             "status": self.status,
         }
 
@@ -438,7 +451,7 @@ class Bot:
             "status": self.status,
             "proxyCountry": self.country,
             "running": self.status == Status.INPROGRESS,
-            "nextExecution": self.next_execution,
+            "nextExecution": self.next_execution.isoformat(),
             "lastError": self.last_error,
             "state": self.state,
             "binaries": [b.serialize() for b in self.binaries],
@@ -794,7 +807,7 @@ class Result:
             "sha256": self.sha256,
             "name": self.name,
             "tags": self.tags,
-            "uploadTime": str(self.upload_time),
+            "uploadTime": self.upload_time.isoformat(),
         }
 
     @staticmethod
