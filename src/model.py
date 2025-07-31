@@ -289,14 +289,15 @@ class TaskView:
         return [TaskView(*x) for x in data]
 
     @staticmethod
-    def fetch_all(cur: cursor, limit: int = 100, start: int = 0, status: Optional[Status] = None) -> List["TaskView"]:
+    def fetch_all(cur: cursor, limit: int = 100, start: int = 0, status: Optional[Status] = None, family: Optional[str] = None) -> List["TaskView"]:
         cur.execute(
             f"""{TaskView.QUERY}
             WHERE t.status=%s OR %s IS NULL
             GROUP BY t.task_id
+            HAVING MIN(b.family)=%s or %s IS NULL
             ORDER BY t.task_id DESC
             OFFSET %s LIMIT %s""",
-            (status, status, start, limit),
+            (status, status, family, family, start, limit),
         )
         data = cur.fetchall()
         return [TaskView(*x) for x in data]

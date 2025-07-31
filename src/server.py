@@ -216,10 +216,11 @@ def get_tasks() -> Response:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
     status = request.args.get("status")
+    family = request.args.get("family")
 
     with model.database_connection() as conn:
         entities = model.TaskView.fetch_all(
-            cur=conn.cursor(), limit=count, start=start, status=status
+            cur=conn.cursor(), limit=count, start=start, status=status, family=family
         )
     return jsonify([e.serialize() for e in entities])
 
