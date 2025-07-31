@@ -191,8 +191,8 @@ class Proxy:
                 "host": new["host"],
                 "port": new["port"],
                 "country": new["country"],
-                "username": new["username"],
-                "password": new["password"],
+                "username": new.get("username"),
+                "password": new.get("password"),
             }
             if n in proxies:
                 delete_list.remove(n)
@@ -252,7 +252,7 @@ class TaskView:
         return {
             "taskId": str(self.task_id),
             "botId": self.bot_id,
-            "startTime": str(self.report_time),
+            "startTime": self.report_time.isoformat(),
             "status": self.status,
             "resultsNo": self.results_no,
             "family": self.family,
@@ -334,7 +334,7 @@ class Task:
         return {
             "taskId": str(self.task_id),
             "botId": self.bot_id,
-            "startTime": str(self.report_time),
+            "startTime": self.report_time.isoformat(),
             "status": self.status,
         }
 
@@ -450,7 +450,7 @@ class Bot:
             "status": self.status,
             "proxyCountry": self.country,
             "running": self.status == Status.INPROGRESS,
-            "nextExecution": self.next_execution,
+            "nextExecution": self.next_execution.isoformat(),
             "lastError": self.last_error,
             "state": self.state,
             "binaries": [b.serialize() for b in self.binaries],
@@ -806,7 +806,7 @@ class Result:
             "sha256": self.sha256,
             "name": self.name,
             "tags": self.tags,
-            "uploadTime": str(self.upload_time),
+            "uploadTime": self.upload_time.isoformat(),
         }
 
     @staticmethod
