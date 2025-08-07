@@ -615,11 +615,14 @@ class Bot:
 
     @staticmethod
     def fetch_by_tracker_id(
-        cur: cursor, tracker_id: int, limit: int = 100, start: int = 0
+        cur: cursor, tracker_id: int, status: Optional[Status] = None, limit: int = 100, start: int = 0
     ) -> List["Bot"]:
-        cur.execute(
-            "SELECT * FROM bots WHERE tracker_id=%s LIMIT %s OFFSET %s",
-            (tracker_id, limit, start),
+        cur.execute("""SELECT *
+            FROM bots
+            WHERE (status=%s OR %s is NULL)
+            AND tracker_id=%s
+            LIMIT %s OFFSET %s""",
+            (status, status, tracker_id, limit, start),
         )
         return [Bot(*x) for x in cur.fetchall()]
 
@@ -684,6 +687,7 @@ class Tracker:
         return {
             "trackerId": self.tracker_id,
             "mwdbId": self.config_hash,
+            "config": self.config,
             "name": self.name,
             "family": self.family,
             "status": self.status,
