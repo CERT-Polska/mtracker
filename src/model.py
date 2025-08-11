@@ -444,13 +444,13 @@ class Bot:
 
     @property
     def name(self) -> str:
-        return f"{self.family}_{self.bot_id}"
+        return f"{self.family}_{self.bot_id}_{self.country}"
 
     def serialize(self) -> Dict[str, Any]:
         return {
             "botId": self.bot_id,
             "trackerId": self.tracker_id,
-            "trackerName": f"{self.family}@{self.tracker_id}",
+            "trackerName": f"{self.family}_{self.tracker_id}",
             "failingSpree": self.failing_spree,
             "status": self.status,
             "proxyCountry": self.country,
@@ -681,7 +681,7 @@ class Tracker:
 
     @property
     def name(self) -> str:
-        return f"{self.family}@{self.tracker_id}"
+        return f"{self.family}_{self.tracker_id}"
 
     def serialize(self) -> Dict[str, Any]:
         return {
