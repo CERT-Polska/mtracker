@@ -1,5 +1,5 @@
-from typedconfig import Config, key, section, group_key  # type: ignore
-from typedconfig.source import EnvironmentConfigSource, IniFileConfigSource  # type: ignore
+from typedconfig.config import Config, key, section, group_key
+from typedconfig.source import EnvironmentConfigSource, IniFileConfigSource
 import os
 
 

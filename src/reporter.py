@@ -2,7 +2,7 @@ import json
 import logging
 from typing import Any, Dict, List
 from redis import Redis
-from rq.job import Job  # type: ignore
+from rq.job import Job
 
 from datetime import datetime, timedelta
 

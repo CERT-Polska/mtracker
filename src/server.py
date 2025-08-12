@@ -1,12 +1,12 @@
 import json
 import logging
 import re
-from rq import Queue  # type: ignore
+from rq import Queue
 from redis import Redis
-from typing import Any, cast, Dict
+from typing import cast, Dict
 import time
 
-import rq_dashboard  # type: ignore
+import rq_dashboard
 from flask import (
     Flask,
     Response,
@@ -18,7 +18,8 @@ from flask import (
     redirect,
     url_for,
 )
-from prometheus_client import (  # type: ignore
+from flask.typing import ResponseReturnValue
+from prometheus_client import (
     CONTENT_TYPE_LATEST,
     Gauge,
     generate_latest,
@@ -43,9 +44,9 @@ app = Flask(__name__, static_folder="./static")
 
 mwdb = utils.get_mwdb()
 
-
 redis_url = f"redis://{app_config.redis.host}:{app_config.redis.port}"
 app.config["RQ_DASHBOARD_REDIS_URL"] = redis_url
+rq_dashboard.web.setup_rq_connection(app)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
 
@@ -55,7 +56,7 @@ mtracker_trackers = Gauge("mtracker_trackers", "Trackers")
 
 
 @app.route("/varz", methods=["GET"])
-def varz() -> Response:
+def varz() -> ResponseReturnValue:
     """Update and get prometheus metrics"""
     with model.database_connection() as conn:
         metrics = model.get_metrics(conn.cursor())
@@ -139,7 +140,7 @@ def proxy_count():
 
 
 @app.route("/api/trackers", methods=["POST"])
-def track_config_api() -> Response:
+def track_config_api() -> ResponseReturnValue:
     """Tracker creation API.
     The API request format is just {"config": {...config data}}.
     Config key should contain a config (as found in mwdb), and other
@@ -160,7 +161,7 @@ def track_config_api() -> Response:
 
 
 @app.route("/track/<dhash>", methods=["POST"])
-def track_config_old(dhash: str) -> Response:
+def track_config_old(dhash: str) -> ResponseReturnValue:
     """Tracker submission API with mwdb integration.
 
     Given config is downloaded from mwdb automatically.
@@ -191,7 +192,7 @@ def track_config_old(dhash: str) -> Response:
 
 
 @app.route("/api/tasks/<int:task_id>/log", methods=["GET"])
-def get_task_log(task_id: int) -> Response:
+def get_task_log(task_id: int) -> ResponseReturnValue:
     log_path = model.Task.get_log_path(task_id)
 
     if not log_path.exists():
@@ -200,7 +201,7 @@ def get_task_log(task_id: int) -> Response:
 
 
 @app.route("/api/results/")
-def get_results() -> Response:
+def get_results() -> ResponseReturnValue:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
 
@@ -212,7 +213,7 @@ def get_results() -> Response:
 
 
 @app.route("/api/tasks/")
-def get_tasks() -> Response:
+def get_tasks() -> ResponseReturnValue:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
     status = request.args.get("status")
@@ -226,7 +227,7 @@ def get_tasks() -> Response:
 
 
 @app.route("/api/tasks/<int:task_id>/results", methods=["GET"])
-def get_task_results(task_id: int) -> Response:
+def get_task_results(task_id: int) -> ResponseReturnValue:
     with model.database_connection() as connection:
         results = model.Result.fetch_by_task_id(
             cur=connection.cursor(),
@@ -236,7 +237,7 @@ def get_task_results(task_id: int) -> Response:
 
 
 @app.route("/api/tasks/<int:task_id>")
-def get_task(task_id: int) -> Response:
+def get_task(task_id: int) -> ResponseReturnValue:
     with model.database_connection() as conn:
         task = model.TaskView.get_by_id(conn.cursor(), task_id)
     if not task:
@@ -245,7 +246,7 @@ def get_task(task_id: int) -> Response:
 
 
 @app.route("/api/trackers/", methods=["GET"])
-def get_trackers() -> Response:
+def get_trackers() -> ResponseReturnValue:
     status = request.args.get("status")
     family = request.args.get("family")
     start = int(request.args.get("start", "0"))
@@ -285,20 +286,20 @@ def tracker_action(tracker_id: int, action: str) -> None:
 
 
 @app.route("/trackers/<int:tracker_id>", methods=["POST"])
-def tracker_action_form(tracker_id: int) -> Response:
+def tracker_action_form(tracker_id: int) -> ResponseReturnValue:
     tracker_action(tracker_id, request.form["action"])
     return redirect(url_for("tracker", tracker_id=tracker_id))
 
 
 @app.route("/api/trackers/<int:tracker_id>", methods=["POST"])
-def tracker_action_api(tracker_id: int) -> Response:
+def tracker_action_api(tracker_id: int) -> ResponseReturnValue:
     action = request.get_json().get("action")
     tracker_action(tracker_id, action)
     return jsonify({})
 
 
 @app.route("/api/trackers/<int:tracker_id>/bots")
-def get_tracker_bots(tracker_id) -> Response:
+def get_tracker_bots(tracker_id) -> ResponseReturnValue:
     status = request.args.get("status")
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
@@ -316,7 +317,7 @@ def get_tracker_bots(tracker_id) -> Response:
 
 
 @app.route("/api/trackers/<int:tracker_id>")
-def get_tracker(tracker_id: int) -> Response:
+def get_tracker(tracker_id: int) -> ResponseReturnValue:
     with model.database_connection() as conn:
         tracker = model.Tracker.get_by_id(conn.cursor(), tracker_id)
     if not tracker:
@@ -325,7 +326,7 @@ def get_tracker(tracker_id: int) -> Response:
 
 
 @app.route("/api/trackers/<int:tracker_id>/results", methods=["GET"])
-def get_tracker_results(tracker_id: int) -> Response:
+def get_tracker_results(tracker_id: int) -> ResponseReturnValue:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
 
@@ -340,7 +341,7 @@ def get_tracker_results(tracker_id: int) -> Response:
 
 
 @app.route("/api/bots/")
-def get_bots() -> Response:
+def get_bots() -> ResponseReturnValue:
     status = request.args.get("status")
     family = request.args.get("family")
     start = int(request.args.get("start", "0"))
@@ -359,7 +360,7 @@ def get_bots() -> Response:
 
 
 @app.route("/api/bots/<int:bot_id>", methods=["GET"])
-def get_bot(bot_id: int) -> Response:
+def get_bot(bot_id: int) -> ResponseReturnValue:
     with model.database_connection() as connection:
         bot = model.Bot.get_by_id(connection.cursor(), bot_id)
     if not bot:
@@ -368,7 +369,7 @@ def get_bot(bot_id: int) -> Response:
 
 
 @app.route("/api/bots/<int:bot_id>/results", methods=["GET"])
-def get_bot_results(bot_id: int) -> Response:
+def get_bot_results(bot_id: int) -> ResponseReturnValue:
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
 
@@ -400,21 +401,21 @@ def bot_action(bot_id: int, action: str) -> None:
 
 
 @app.route("/api/bots/<int:bot_id>", methods=["POST"])
-def bot_action_api(bot_id: int) -> Response:
+def bot_action_api(bot_id: int) -> ResponseReturnValue:
     action = request.get_json().get("action")
     bot_action(bot_id, action)
     return jsonify({})
 
 
 @app.route("/bots/<int:bot_id>", methods=["POST"])
-def bot_action_form(bot_id: int) -> Response:
+def bot_action_form(bot_id: int) -> ResponseReturnValue:
     action = request.form["action"]
     bot_action(bot_id, action)
     return redirect(url_for("bot", bot_id=bot_id))
 
 
 @app.route("/api/bots/<int:bot_id>/tasks", methods=["GET"])
-def get_bot_tasks(bot_id: int) -> Response:
+def get_bot_tasks(bot_id: int) -> ResponseReturnValue:
     status = request.args.get("status")
     start = int(request.args.get("start", "0"))
     count = int(request.args.get("count", "10"))
@@ -427,7 +428,7 @@ def get_bot_tasks(bot_id: int) -> Response:
 
 
 @app.route("/api/bots/<int:bot_id>/log", methods=["GET"])
-def get_bot_last_log(bot_id: int) -> Response:
+def get_bot_last_log(bot_id: int) -> ResponseReturnValue:
     with model.database_connection() as connection:
         tasks = model.TaskView.get_by_bot_id(connection.cursor(), bot_id)
 
@@ -441,14 +442,14 @@ def get_bot_last_log(bot_id: int) -> Response:
 
 
 @app.route("/api/proxies/", methods=["GET"])
-def fetch_proxies() -> Response:
+def fetch_proxies() -> ResponseReturnValue:
     with model.database_connection() as connection:
         entities = model.Proxy.fetch_all(connection.cursor())
     return jsonify([e.serialize() for e in entities])
 
 
 @app.route("/api/proxies/update", methods=["POST"])
-def update_proxies() -> Response:
+def update_proxies() -> ResponseReturnValue:
     with model.database_connection() as connection:
         new_proxies = utils.get_proxies()
         new_proxies = [p for p in new_proxies if p.get("is_alive")]
@@ -459,33 +460,33 @@ def update_proxies() -> Response:
 
 
 @app.route("/api/heartbeat/", methods=["GET"])
-def heartbeat() -> Response:
+def heartbeat() -> ResponseReturnValue:
     with model.database_connection() as conn:
         return jsonify(model.get_status(conn.cursor()))
 
 
 @app.route("/src/<path:path>")
-def static_file_src(path: str) -> Any:
+def static_file_src(path: str) -> ResponseReturnValue:
     return send_from_directory(cast(str, app.static_folder), "src/" + path)
 
 
 @app.route("/build/<path:path>")
-def static_file_build(path: str) -> Any:
+def static_file_build(path: str) -> ResponseReturnValue:
     return send_from_directory(cast(str, app.static_folder), "build/" + path)
 
 
 @app.route("/css/<path:path>")
-def static_file_css(path: str) -> Any:
+def static_file_css(path: str) -> ResponseReturnValue:
     return send_from_directory(cast(str, app.static_folder), "css/" + path)
 
 
 @app.route("/flags/<path:path>")
-def static_file_flags(path: str) -> Any:
+def static_file_flags(path: str) -> ResponseReturnValue:
     return send_from_directory(cast(str, app.static_folder), "flags/" + path)
 
 
 @app.route("/proxies")
-def proxies() -> Any:
+def proxies() -> ResponseReturnValue:
     with model.database_connection() as conn:
         entities = model.Proxy.fetch_all(cur=conn.cursor())
 
@@ -493,7 +494,7 @@ def proxies() -> Any:
 
 
 @app.route("/proxies/update")
-def proxies_update() -> Any:
+def proxies_update() -> ResponseReturnValue:
     with model.database_connection() as connection:
         new_proxies = utils.get_proxies()
         new_proxies = [p for p in new_proxies if p.get("is_alive")]
@@ -505,7 +506,7 @@ def proxies_update() -> Any:
 
 
 @app.route("/results")
-def results() -> Any:
+def results() -> ResponseReturnValue:
     page = int(request.args.get("page", "1"))
     start = (page - 1) * PAGE_SIZE
     count = int(request.args.get("count", PAGE_SIZE))
@@ -523,7 +524,7 @@ def results() -> Any:
 
 
 @app.route("/tasks")
-def tasks() -> Any:
+def tasks() -> ResponseReturnValue:
     status = request.args.get("status")
     page = int(request.args.get("page", "1"))
     start = (page - 1) * PAGE_SIZE
@@ -543,7 +544,7 @@ def tasks() -> Any:
 
 
 @app.route("/tasks/<task_id>")
-def task(task_id: int) -> Any:
+def task(task_id: int) -> ResponseReturnValue:
     with model.database_connection() as conn:
         entity = model.TaskView.get_by_id(cur=conn.cursor(), task_id=task_id)
         if entity is None:
@@ -560,7 +561,7 @@ def task(task_id: int) -> Any:
 
 
 @app.route("/bots")
-def bots() -> Any:
+def bots() -> ResponseReturnValue:
     status = request.args.get("status")
     family = request.args.get("family")
     page = int(request.args.get("page", "1"))
@@ -582,7 +583,7 @@ def bots() -> Any:
 
 
 @app.route("/bots/<bot_id>")
-def bot(bot_id: int) -> Any:
+def bot(bot_id: int) -> ResponseReturnValue:
     with model.database_connection() as conn:
         entity = model.Bot.get_by_id(cur=conn.cursor(), bot_id=bot_id)
         if entity is None:
@@ -597,7 +598,7 @@ def bot(bot_id: int) -> Any:
 
 
 @app.route("/trackers")
-def trackers() -> Any:
+def trackers() -> ResponseReturnValue:
     status = request.args.get("status")
     family = request.args.get("family")
     page = int(request.args.get("page", "1"))
@@ -619,7 +620,7 @@ def trackers() -> Any:
 
 
 @app.route("/trackers/<tracker_id>")
-def tracker(tracker_id) -> Any:
+def tracker(tracker_id) -> ResponseReturnValue:
     with model.database_connection() as conn:
         cur = conn.cursor()
         entity = model.Tracker.get_by_id(cur=cur, tracker_id=tracker_id)
@@ -631,7 +632,7 @@ def tracker(tracker_id) -> Any:
 
 
 @app.route("/")
-def index() -> Any:
+def index() -> ResponseReturnValue:
     with model.database_connection() as conn:
         status = model.get_status(conn.cursor())
         tasks = model.TaskView.fetch_all(

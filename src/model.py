@@ -5,8 +5,8 @@ from enum import IntEnum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, NamedTuple
 
-import psycopg2  # type: ignore
-from psycopg2.extensions import connection, cursor  # type: ignore
+import psycopg2
+from psycopg2.extensions import connection, cursor
 
 from .config import app_config
 

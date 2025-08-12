@@ -1,4 +1,4 @@
-from rq import Queue  # type: ignore
+from rq import Queue
 from redis import Redis
 from typing import Optional
 from datetime import datetime, timedelta
