@@ -162,7 +162,7 @@ def track_config_api() -> Response:
 @app.route("/track/<dhash>", methods=["POST"])
 def track_config_old(dhash: str) -> Response:
     """Tracker submission API with mwdb integration.
-    
+
     Given config is downloaded from mwdb automatically.
 
     :param dhash: config dhash, to be downloaded from mwdb
@@ -223,6 +223,16 @@ def get_tasks() -> Response:
             cur=conn.cursor(), limit=count, start=start, status=status, family=family
         )
     return jsonify([e.serialize() for e in entities])
+
+
+@app.route("/api/tasks/<int:task_id>/results", methods=["GET"])
+def get_task_results(task_id: int) -> Response:
+    with model.database_connection() as connection:
+        results = model.Result.fetch_by_task_id(
+            cur=connection.cursor(),
+            task_id=task_id
+        )
+        return jsonify([r.serialize() for r in results])
 
 
 @app.route("/api/tasks/<int:task_id>")
@@ -287,6 +297,24 @@ def tracker_action_api(tracker_id: int) -> Response:
     return jsonify({})
 
 
+@app.route("/api/trackers/<int:tracker_id>/bots")
+def get_tracker_bots(tracker_id) -> Response:
+    status = request.args.get("status")
+    start = int(request.args.get("start", "0"))
+    count = int(request.args.get("count", "10"))
+
+    with model.database_connection() as conn:
+        bots = model.Bot.fetch_by_tracker_id(
+            cur=conn.cursor(),
+            start=start,
+            limit=count,
+            status=status,
+            tracker_id=tracker_id
+        )
+
+    return jsonify([e.serialize() for e in bots])
+
+
 @app.route("/api/trackers/<int:tracker_id>")
 def get_tracker(tracker_id: int) -> Response:
     with model.database_connection() as conn:
@@ -294,6 +322,21 @@ def get_tracker(tracker_id: int) -> Response:
     if not tracker:
         abort(404)
     return jsonify(tracker.serialize())
+
+
+@app.route("/api/trackers/<int:tracker_id>/results", methods=["GET"])
+def get_tracker_results(tracker_id: int) -> Response:
+    start = int(request.args.get("start", "0"))
+    count = int(request.args.get("count", "10"))
+
+    with model.database_connection() as connection:
+        results = model.Result.fetch_by_tracker_id(
+            cur=connection.cursor(),
+            tracker_id=tracker_id,
+            start=start,
+            limit=count
+        )
+        return jsonify([r.serialize() for r in results])
 
 
 @app.route("/api/bots/")
@@ -322,6 +365,21 @@ def get_bot(bot_id: int) -> Response:
     if not bot:
         abort(404)
     return jsonify(bot.serialize())
+
+
+@app.route("/api/bots/<int:bot_id>/results", methods=["GET"])
+def get_bot_results(bot_id: int) -> Response:
+    start = int(request.args.get("start", "0"))
+    count = int(request.args.get("count", "10"))
+
+    with model.database_connection() as connection:
+        results = model.Result.fetch_by_bot_id(
+            cur=connection.cursor(),
+            bot_id=bot_id,
+            start=start,
+            limit=count
+        )
+        return jsonify([r.serialize() for r in results])
 
 
 def bot_action(bot_id: int, action: str) -> None:

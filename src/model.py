@@ -442,11 +442,15 @@ class Bot:
             (state, next_execution, bot_id),
         )
 
+    @property
+    def name(self) -> str:
+        return f"{self.family}_{self.tracker_id}_{self.country}"
+
     def serialize(self) -> Dict[str, Any]:
         return {
             "botId": self.bot_id,
             "trackerId": self.tracker_id,
-            "trackerName": f"{self.tracker_id}_{self.family}",
+            "trackerName": f"{self.family}_{self.tracker_id}",
             "failingSpree": self.failing_spree,
             "status": self.status,
             "proxyCountry": self.country,
@@ -454,6 +458,8 @@ class Bot:
             "nextExecution": self.next_execution.isoformat(),
             "lastError": self.last_error,
             "state": self.state,
+            "name": self.name,
+            "family": self.family,
             "binaries": [b.serialize() for b in self.binaries],
             "blobs": [b.serialize() for b in self.blobs],
             "configs": [b.serialize() for b in self.configs],
@@ -609,11 +615,14 @@ class Bot:
 
     @staticmethod
     def fetch_by_tracker_id(
-        cur: cursor, tracker_id: int, limit: int = 100, start: int = 0
+        cur: cursor, tracker_id: int, status: Optional[Status] = None, limit: int = 100, start: int = 0
     ) -> List["Bot"]:
-        cur.execute(
-            "SELECT * FROM bots WHERE tracker_id=%s LIMIT %s OFFSET %s",
-            (tracker_id, limit, start),
+        cur.execute("""SELECT *
+            FROM bots
+            WHERE (status=%s OR %s is NULL)
+            AND tracker_id=%s
+            LIMIT %s OFFSET %s""",
+            (status, status, tracker_id, limit, start),
         )
         return [Bot(*x) for x in cur.fetchall()]
 
@@ -670,11 +679,17 @@ class Tracker:
         self.family = family
         self.status = status
 
+    @property
+    def name(self) -> str:
+        return f"{self.family}_{self.tracker_id}"
+
     def serialize(self) -> Dict[str, Any]:
         return {
             "trackerId": self.tracker_id,
             "mwdbId": self.config_hash,
-            "name": f"{self.tracker_id}_{self.family}",
+            "config": self.config,
+            "name": self.name,
+            "family": self.family,
             "status": self.status,
         }
 
