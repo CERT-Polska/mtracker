@@ -54,7 +54,7 @@ mtracker_tasks = Gauge("mtracker_tasks", "Tasks", ("status",))
 mtracker_trackers = Gauge("mtracker_trackers", "Trackers")
 
 
-@app.route("/varz", methods=["GET"])
+@app.route("/varz")
 def varz() -> Response:
     """Update and get prometheus metrics"""
     with model.database_connection() as conn:
@@ -190,7 +190,7 @@ def track_config_old(dhash: str) -> Response:
     return jsonify(response)
 
 
-@app.route("/api/tasks/<int:task_id>/log", methods=["GET"])
+@app.route("/api/tasks/<int:task_id>/log")
 def get_task_log(task_id: int) -> Response:
     log_path = model.Task.get_log_path(task_id)
 
@@ -225,7 +225,7 @@ def get_tasks() -> Response:
     return jsonify([e.serialize() for e in entities])
 
 
-@app.route("/api/tasks/<int:task_id>/results", methods=["GET"])
+@app.route("/api/tasks/<int:task_id>/results")
 def get_task_results(task_id: int) -> Response:
     with model.database_connection() as connection:
         results = model.Result.fetch_by_task_id(
@@ -244,7 +244,7 @@ def get_task(task_id: int) -> Response:
     return jsonify(task.serialize())
 
 
-@app.route("/api/trackers/", methods=["GET"])
+@app.route("/api/trackers/")
 def get_trackers() -> Response:
     status = request.args.get("status")
     family = request.args.get("family")
@@ -324,7 +324,7 @@ def get_tracker(tracker_id: int) -> Response:
     return jsonify(tracker.serialize())
 
 
-@app.route("/api/trackers/<int:tracker_id>/results", methods=["GET"])
+@app.route("/api/trackers/<int:tracker_id>/results")
 def get_tracker_results(tracker_id: int) -> Response:
     start = request.args.get("start", 0, type=int)
     count = request.args.get("count", 10, type=int)
@@ -358,7 +358,7 @@ def get_bots() -> Response:
     return jsonify([e.serialize() for e in entities])
 
 
-@app.route("/api/bots/<int:bot_id>", methods=["GET"])
+@app.route("/api/bots/<int:bot_id>")
 def get_bot(bot_id: int) -> Response:
     with model.database_connection() as connection:
         bot = model.Bot.get_by_id(connection.cursor(), bot_id)
@@ -367,7 +367,7 @@ def get_bot(bot_id: int) -> Response:
     return jsonify(bot.serialize())
 
 
-@app.route("/api/bots/<int:bot_id>/results", methods=["GET"])
+@app.route("/api/bots/<int:bot_id>/results")
 def get_bot_results(bot_id: int) -> Response:
     start = request.args.get("start", 0, type=int)
     count = request.args.get("count", 10, type=int)
@@ -413,7 +413,7 @@ def bot_action_form(bot_id: int) -> Response:
     return redirect(url_for("bot", bot_id=bot_id))
 
 
-@app.route("/api/bots/<int:bot_id>/tasks", methods=["GET"])
+@app.route("/api/bots/<int:bot_id>/tasks")
 def get_bot_tasks(bot_id: int) -> Response:
     status = request.args.get("status")
     start = request.args.get("start", 0, type=int)
@@ -426,7 +426,7 @@ def get_bot_tasks(bot_id: int) -> Response:
     return jsonify([e.serialize() for e in entities])
 
 
-@app.route("/api/bots/<int:bot_id>/log", methods=["GET"])
+@app.route("/api/bots/<int:bot_id>/log")
 def get_bot_last_log(bot_id: int) -> Response:
     with model.database_connection() as connection:
         tasks = model.TaskView.get_by_bot_id(connection.cursor(), bot_id)
@@ -440,7 +440,7 @@ def get_bot_last_log(bot_id: int) -> Response:
     return jsonify({"data": log_path.read_text()})
 
 
-@app.route("/api/proxies/", methods=["GET"])
+@app.route("/api/proxies/")
 def fetch_proxies() -> Response:
     with model.database_connection() as connection:
         entities = model.Proxy.fetch_all(connection.cursor())
@@ -458,7 +458,7 @@ def update_proxies() -> Response:
         return jsonify(proxy_changes)
 
 
-@app.route("/api/heartbeat/", methods=["GET"])
+@app.route("/api/heartbeat/")
 def heartbeat() -> Response:
     with model.database_connection() as conn:
         return jsonify(model.get_status(conn.cursor()))
