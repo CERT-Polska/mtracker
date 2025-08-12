@@ -201,8 +201,8 @@ def get_task_log(task_id: int) -> Response:
 
 @app.route("/api/results/")
 def get_results() -> Response:
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as conn:
         entities = model.Result.fetch_all(
@@ -213,8 +213,8 @@ def get_results() -> Response:
 
 @app.route("/api/tasks/")
 def get_tasks() -> Response:
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
     status = request.args.get("status")
     family = request.args.get("family")
 
@@ -248,8 +248,8 @@ def get_task(task_id: int) -> Response:
 def get_trackers() -> Response:
     status = request.args.get("status")
     family = request.args.get("family")
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as conn:
         entities = model.Tracker.fetch_all(
@@ -300,8 +300,8 @@ def tracker_action_api(tracker_id: int) -> Response:
 @app.route("/api/trackers/<int:tracker_id>/bots")
 def get_tracker_bots(tracker_id) -> Response:
     status = request.args.get("status")
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as conn:
         bots = model.Bot.fetch_by_tracker_id(
@@ -326,8 +326,8 @@ def get_tracker(tracker_id: int) -> Response:
 
 @app.route("/api/trackers/<int:tracker_id>/results", methods=["GET"])
 def get_tracker_results(tracker_id: int) -> Response:
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as connection:
         results = model.Result.fetch_by_tracker_id(
@@ -343,8 +343,8 @@ def get_tracker_results(tracker_id: int) -> Response:
 def get_bots() -> Response:
     status = request.args.get("status")
     family = request.args.get("family")
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as conn:
         entities = model.Bot.fetch_all(
@@ -369,8 +369,8 @@ def get_bot(bot_id: int) -> Response:
 
 @app.route("/api/bots/<int:bot_id>/results", methods=["GET"])
 def get_bot_results(bot_id: int) -> Response:
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as connection:
         results = model.Result.fetch_by_bot_id(
@@ -416,8 +416,8 @@ def bot_action_form(bot_id: int) -> Response:
 @app.route("/api/bots/<int:bot_id>/tasks", methods=["GET"])
 def get_bot_tasks(bot_id: int) -> Response:
     status = request.args.get("status")
-    start = int(request.args.get("start", "0"))
-    count = int(request.args.get("count", "10"))
+    start = request.args.get("start", 0, type=int)
+    count = request.args.get("count", 10, type=int)
 
     with model.database_connection() as connection:
         entities = model.TaskView.get_by_bot_id(
@@ -506,9 +506,9 @@ def proxies_update() -> Any:
 
 @app.route("/results")
 def results() -> Any:
-    page = int(request.args.get("page", "1"))
+    page = request.args.get("page", 1, type=int)
     start = (page - 1) * PAGE_SIZE
-    count = int(request.args.get("count", PAGE_SIZE))
+    count = request.args.get("count", PAGE_SIZE, type=int)
 
     with model.database_connection() as conn:
         entities = model.Result.fetch_all(
@@ -525,9 +525,9 @@ def results() -> Any:
 @app.route("/tasks")
 def tasks() -> Any:
     status = request.args.get("status")
-    page = int(request.args.get("page", "1"))
+    page = request.args.get("page", 1, type=int)
     start = (page - 1) * PAGE_SIZE
-    count = int(request.args.get("count", PAGE_SIZE))
+    count = request.args.get("count", PAGE_SIZE, type=int)
 
     with model.database_connection() as conn:
         entities = model.TaskView.fetch_all(
@@ -563,9 +563,9 @@ def task(task_id: int) -> Any:
 def bots() -> Any:
     status = request.args.get("status")
     family = request.args.get("family")
-    page = int(request.args.get("page", "1"))
+    page = request.args.get("page", 1, type=int)
     start = (page - 1) * PAGE_SIZE
-    count = int(request.args.get("count", PAGE_SIZE))
+    count = request.args.get("count", PAGE_SIZE, type=int)
 
     with model.database_connection() as conn:
         entities = model.Bot.fetch_all(
@@ -600,9 +600,9 @@ def bot(bot_id: int) -> Any:
 def trackers() -> Any:
     status = request.args.get("status")
     family = request.args.get("family")
-    page = int(request.args.get("page", "1"))
+    page = request.args.get("page", 1, type=int)
     start = (page - 1) * PAGE_SIZE
-    count = int(request.args.get("count", PAGE_SIZE))
+    count = request.args.get("count", PAGE_SIZE, type=int)
 
     with model.database_connection() as conn:
         entities = model.TrackerWithBots.fetch_all(
