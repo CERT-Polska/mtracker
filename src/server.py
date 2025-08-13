@@ -318,18 +318,18 @@ def get_tracker_bots(tracker_id) -> Response:
 @app.route("/api/trackers/<id_or_dhash>")
 def get_tracker(id_or_dhash: str) -> Response:
     tracker = None
-    if id_or_dhash.isdigit():
+    if len(id_or_dhash) == 64:
+        with model.database_connection() as conn:
+            tracker = model.Tracker.get_by_hash(
+                cur=conn.cursor(),
+                config_hash=id_or_dhash
+            )
+    elif id_or_dhash.isdigit():
         tracker_id = int(id_or_dhash)
         with model.database_connection() as conn:
             tracker = model.Tracker.get_by_id(
                 cur=conn.cursor(),
                 tracker_id=tracker_id
-            )
-    elif len(id_or_dhash) == 64:
-        with model.database_connection() as conn:
-            tracker = model.Tracker.get_by_hash(
-                cur=conn.cursor(),
-                config_hash=id_or_dhash
             )
     if not tracker:
         abort(404)
