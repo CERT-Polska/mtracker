@@ -8,18 +8,19 @@ on:
       - master
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu:24.04
     steps:
       - uses: CERT-Polska/lint-python-action@v2
         with:
           source: karton/
           python-version: 3.12
   unittest:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu:24.04
     strategy:
       matrix:
         minor: [11, 12, 13]
     steps:
+      - run: apt install python3-dev
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
