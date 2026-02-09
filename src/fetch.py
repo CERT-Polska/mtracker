@@ -8,7 +8,7 @@ from .config import app_config
 from . import report_fetch
 from . import utils
 from .bot import ModuleBase
-from .modules import ModuleManager
+from .loader import ModuleManager
 from .model import Proxy
 
 
@@ -28,7 +28,7 @@ def main() -> int:
         "--file", "-f", help="use static config read from file"
     )
     parser.add_argument(
-        "--modules", "-m", help="Path to mtracker modules"
+        "--modules", "-m", help="Path to mtracker modules", required=True,
     )
     parser.add_argument(
         "--out",
@@ -40,6 +40,9 @@ def main() -> int:
     args = parser.parse_args()
 
     trackers = ModuleManager.load(args.modules)
+
+    if not args.file and not args.hash:
+        logging.error("Either --hash or --file is mandatory")
 
     if args.file:
         with open(args.file, "r") as f:
