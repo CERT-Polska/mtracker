@@ -1,0 +1,40 @@
+version: '3'
+services:
+  postgres:
+    restart: always
+    image: postgres:10.4
+    environment:
+      - POSTGRES_USER=mtracker3
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=mtracker3
+    ports:
+    - "127.0.0.1:5432:5432"
+    volumes:
+    - "./data/postgres:/var/lib/postgresql/data"
+  web:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/web.dev.Dockerfile
+    environment:
+      - MTRACKER_DEBUG=1
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+      - LOG_DIR=/opt/logs
+      - PROXY_DEFAULT_PROXY
+      - PROXY_URL
+      - PROXY_METHOD
+      - PROXY_PATH
+      - MWDB_URL
+      - MWDB_TOKEN
+    ports:
+    - "127.0.0.1:80:5000"
+    volumes:
+    - "./data/logs:/opt/logs"
+    - "./src:/usr/src/app/src"
+    links:
+    - redis
+    - postgres
+  redis:
+    restart: always
+    image: redis

@@ -645,13 +645,20 @@ def index() -> Any:
 
 if __name__ == "__main__":
     log.info("Getting available modules from workers")
-    q = track_queue.enqueue(
-        "mtracker.track.get_available_trackers",
-    )
-    while q.result is None:
-        log.info("Still waiting")
-        time.sleep(1)
+    if app_config.mtracker.debug:
+        # debug mode is only for web development, and workers are not started
+        log.info("Debug mode started, no modules loaded")
+        AVAILABLE_MODULES = {}
+    else:
+        q = track_queue.enqueue(
+            "mtracker.track.get_available_trackers",
+        )
+        while q.result is None:
+            log.info("Still waiting")
+            time.sleep(1)
 
-    AVAILABLE_MODULES = {x.family: x for x in q.result}
-    log.info("Got %d supported modules", len(AVAILABLE_MODULES))
-    app.run(host="0.0.0.0", port=5000)
+        AVAILABLE_MODULES = {x.family: x for x in q.result}
+        log.info("Got %d supported modules", len(AVAILABLE_MODULES))
+
+    app.run(host="0.0.0.0", port=5000, debug=app_config.mtracker.debug)
+

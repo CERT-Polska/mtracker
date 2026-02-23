@@ -13,6 +13,8 @@ class MtrackerConfig(Config):
     task_period = key(cast=int, required=False, default=43200)
     # A default timeout that should be used for HTTP requests
     default_http_timeout = key(cast=int, required=False, default=3)
+    # Run flask in debug mode?
+    debug = key(cast=int, required=False, default=0)
 
 
 @section("log")
