@@ -16,6 +16,15 @@
 <a href="{{base}}?status={{statusname}}" class="{{ classnames[statusname] }}">{{statusname}}</a>
 {% endmacro %}
 
+{% macro showlogs(statusname, task_id, text=None) %}
+<a href="#"
+   class="show-logs {{ classnames[statusname] }}"
+   data-task-id="{{ task_id }}"
+   data-status="{{ statusname }}">
+   {{ text or statusname }}
+</a>
+{% endmacro %}
+
 {% macro showstatusbtn(statusname) %}
 {% set active = request.args.get('status') == statusname %}
 {% set activeclass = "active nomouse" if active else "" %}

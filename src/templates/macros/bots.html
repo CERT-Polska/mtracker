@@ -1,5 +1,5 @@
 {% from "macros/utils.html" import showtime, cap_length, mtracker_url %}
-{% from "macros/status.html" import showstatus %}
+{% from "macros/status.html" import showlogs %}
 
 {% macro bots_table(rows) %}
 <table class="table">
@@ -17,7 +17,11 @@
     <td><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></td>
     <td>{{cap_length(entity.last_error, 60)}}</td>
     <td>
-      {{showstatus(entity.status)}}
+      {% if entity.last_task_id %}
+        {{showlogs(entity.status, entity.last_task_id)}}
+      {% else %}
+        {{ entity.status }}
+      {% endif %}
       {% if entity.status == 'failing' %}({{entity.failing_spree}}){% endif %}
     </td>
     <td>
