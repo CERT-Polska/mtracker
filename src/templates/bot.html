@@ -2,7 +2,7 @@
 
 {% from "macros/tasks.html" import tasks_table %}
 {% from "macros/utils.html" import showtime %}
-{% from "macros/status.html" import showlogs %}
+{% from "macros/status.html" import show_task_logs %}
 
 {% block content %}
 <h1 class="text-center">Bot {{entity.family}}_{{entity.bot_id}}</h1>
@@ -26,7 +26,7 @@
   <dt>status</dt>
   <dd>
     {% if tasks %}
-    {{showlogs(entity.status, tasks[0].task_id)}}
+    {{show_task_logs(entity.status, tasks[0].task_id)}}
     {% else %}
     {{entity.status}}
     {% endif %}

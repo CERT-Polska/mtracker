@@ -45,12 +45,24 @@
         $(document).on("click", ".show-logs", function(e) {
             e.preventDefault();
 
+            // Only one of task-id and bot-id can be set
             var taskId = $(this).data("task-id");
+            var botId = $(this).data("bot-id");
+
+            var log_url;
+            if (taskId !== undefined) {
+              log_url = "/api/tasks/" + taskId + "/log";
+            } else if (botId !== undefined) {
+              log_url = "/api/bots/" + botId + "/log";
+            } else {
+              console.error("Either task-id or bot-id must be set");
+              return;
+            }
 
             $("#logContent").text("Loading...");
             $("#logModal").modal("show");
 
-            $.get("/api/tasks/" + taskId + "/log")
+            $.get(log_url)
                 .done(function(response) {
                     $("#logContent").text(response.data);
                 })
