@@ -1,18 +1,17 @@
 {% from "macros/utils.html" import showtime, cap_length %}
-{% from "macros/status.html" import showstatus %}
+{% from "macros/status.html" import showlogs %}
 
 {% macro tasks_table(rows) %}
 <table class="table">
   <tr>
-      <th>task id</th>
+      <th>report time</th>
       <th>bot</th>
       <th>result</th>
-      <th>report time</th>
       <th>status</th>
   </tr>
   {% for entity in rows %}
   <tr>
-    <td><a href="{{url_for('task', task_id=entity.task_id)}}">{{entity.task_id}}</a></td>
+    <td><a href="{{url_for('task', task_id=entity.task_id)}}">{{showtime(entity.report_time)}}</a></td>
     <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.family}}_{{entity.bot_id}}</a></td>
     <td>
       {% if entity.fail_reason %}
@@ -21,8 +20,7 @@
       Fetched {{entity.results_no}} items
       {% endif %}
     </td>
-    <td>{{showtime(entity.report_time)}}</td>
-    <td>{{showstatus(entity.status, "/tasks")}}</td>
+    <td>{{showlogs(entity.status, entity.task_id)}}</td>
   </tr>
   {% endfor %}
 </table>

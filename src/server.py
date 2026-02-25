@@ -464,14 +464,9 @@ def heartbeat() -> Response:
         return jsonify(model.get_status(conn.cursor()))
 
 
-@app.route("/src/<path:path>")
-def static_file_src(path: str) -> Any:
-    return send_from_directory(cast(str, app.static_folder), "src/" + path)
-
-
-@app.route("/build/<path:path>")
-def static_file_build(path: str) -> Any:
-    return send_from_directory(cast(str, app.static_folder), "build/" + path)
+@app.route("/js/<path:path>")
+def static_file_js(path: str) -> Any:
+    return send_from_directory(cast(str, app.static_folder), "js/" + path)
 
 
 @app.route("/css/<path:path>")

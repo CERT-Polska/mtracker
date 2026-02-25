@@ -646,6 +646,7 @@ class TrackerWithBots:
         self.config = tracker.config
         self.family = tracker.family
         self.status = tracker.status
+        self.config_url = tracker.config_url
         self.bots = bots
 
     @staticmethod
@@ -691,6 +692,7 @@ class Tracker:
             "name": self.name,
             "family": self.family,
             "status": self.status,
+            "configUrl": self.config_url,
         }
 
     @property
