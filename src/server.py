@@ -315,10 +315,22 @@ def get_tracker_bots(tracker_id) -> Response:
     return jsonify([e.serialize() for e in bots])
 
 
-@app.route("/api/trackers/<int:tracker_id>")
-def get_tracker(tracker_id: int) -> Response:
-    with model.database_connection() as conn:
-        tracker = model.Tracker.get_by_id(conn.cursor(), tracker_id)
+@app.route("/api/trackers/<id_or_dhash>")
+def get_tracker(id_or_dhash: str) -> Response:
+    tracker = None
+    if len(id_or_dhash) == 64:
+        with model.database_connection() as conn:
+            tracker = model.Tracker.get_by_hash(
+                cur=conn.cursor(),
+                config_hash=id_or_dhash
+            )
+    elif id_or_dhash.isdigit():
+        tracker_id = int(id_or_dhash)
+        with model.database_connection() as conn:
+            tracker = model.Tracker.get_by_id(
+                cur=conn.cursor(),
+                tracker_id=tracker_id
+            )
     if not tracker:
         abort(404)
     return jsonify(tracker.serialize())
