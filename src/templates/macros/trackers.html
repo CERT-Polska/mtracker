@@ -1,21 +1,21 @@
-{% from "macros/status.html" import showstatus, showlogs %}
+{% from "macros/status.html" import showstatus, show_bot_last_logs %}
 
 {% macro trackers_table(rows) %}
 <table class="table">
   <tr>
       <th class="col-md-1">tracker</th>
       <th class="col-md-2">family</th>
-      <th class="col-md-6">static config</th>
+      <th class="col-md-4">static config</th>
       <th class="col-md-3">bots</th>
   </tr>
   {% for entity in rows %}
   <tr>
-    <td><a href="{{url_for('tracker', tracker_id=entity.tracker_id)}}">{{entity.tracker_id}}</a></td>
+    <td><a href="{{url_for('tracker', tracker_id=entity.tracker_id)}}">{{entity.name}}</a></td>
     <td><a href="{{url_for('trackers', family=entity.family)}}">{{entity.family}}</a></td>
-    <td><a class="text-monospace" href="{{entity.config_url}}">{{entity.config_hash}}</a></td>
+    <td><a class="text-monospace" href="{{entity.config_url}}">{{entity.config_hash[:32]}}</a></td>
     <td>
       {% for bot in entity.bots %}
-      <a href="{{url_for('bot', bot_id=bot.bot_id)}}">{{showlogs(bot.status, bot.bot_id, text=bot.name)}}</a><br>
+      <a href="{{url_for('bot', bot_id=bot.bot_id)}}">{{bot.name}}</a> ({{show_bot_last_logs(bot.status, bot.bot_id)}})<br>
       {% endfor %}
     </td>
   </tr>

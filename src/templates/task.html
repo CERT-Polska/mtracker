@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% from "macros/results.html" import results_table %}
 {% from "macros/utils.html" import showtime %}
-{% from "macros/status.html" import showlogs %}
+{% from "macros/status.html" import show_task_logs %}
 
 {% block content %}
 <h1 class="text-center">Task {{entity.task_id}}</h1>
@@ -14,7 +14,7 @@
   <dd>{{showtime(entity.report_time)}}</dd>
   
   <dt>status</dt>
-  <dd>{{showlogs(entity.status, entity.task_id)}}</dd>
+  <dd>{{show_task_logs(entity.status, entity.task_id)}}</dd>
 </dl>
 
 <h2>Results</h2>

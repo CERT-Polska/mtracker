@@ -1,13 +1,13 @@
 {% from "macros/utils.html" import showtime, cap_length %}
-{% from "macros/status.html" import showlogs %}
+{% from "macros/status.html" import show_task_logs %}
 
 {% macro tasks_table(rows) %}
 <table class="table">
   <tr>
-      <th>report time</th>
-      <th>bot</th>
-      <th>result</th>
-      <th>status</th>
+      <th class="col-md-2">report time</th>
+      <th class="col-md-2">bot</th>
+      <th class="col-md-4">status</th>
+      <th class="col-md-4">result</th>
   </tr>
   {% for entity in rows %}
   <tr>
@@ -20,7 +20,7 @@
       Fetched {{entity.results_no}} items
       {% endif %}
     </td>
-    <td>{{showlogs(entity.status, entity.task_id)}}</td>
+    <td>{{show_task_logs(entity.status, entity.task_id)}}</td>
   </tr>
   {% endfor %}
 </table>
