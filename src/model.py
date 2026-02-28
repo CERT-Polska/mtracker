@@ -233,6 +233,8 @@ class TaskView:
         family: str,
         fail_reason: str,
         results_no: int,
+        tracker_id: int,
+        country: int,
     ) -> None:
         self.task_id = task_id
         self.bot_id = bot_id
@@ -242,11 +244,17 @@ class TaskView:
         self.family = family
         self.results_no = results_no
         self.fail_reason = fail_reason
+        self.tracker_id = tracker_id
+        self.country = country
 
-    QUERY = """SELECT t.task_id, t.bot_id, t.status, t.report_time, t.logs, MIN(b.family), MIN(b.last_error), COUNT(r.*)
+    QUERY = """SELECT t.task_id, t.bot_id, t.status, t.report_time, t.logs, MIN(b.family), MIN(b.last_error), COUNT(r.*), MIN(b.tracker_id), MIN(b.country)
         FROM tasks t
         LEFT JOIN results r ON t.task_id=r.task_id
         INNER JOIN bots b ON b.bot_id=t.bot_id"""
+
+    @property
+    def bot_name(self) -> str:
+        return f"{self.family}_{self.tracker_id}_{self.country}"
 
     def serialize(self) -> Dict[str, Any]:
         return {
@@ -441,6 +449,10 @@ class Bot:
             """,
             (state, next_execution, bot_id),
         )
+
+    @property
+    def tracker_name(self) -> str:
+        return f"{self.family}_{self.tracker_id}"
 
     @property
     def name(self) -> str:
@@ -648,6 +660,10 @@ class TrackerWithBots:
         self.status = tracker.status
         self.config_url = tracker.config_url
         self.bots = bots
+
+    @property
+    def name(self) -> str:
+        return f"{self.family}_{self.tracker_id}"
 
     @staticmethod
     def fetch_all(cur: cursor, limit: int = 100, start: int = 0, status: Optional[Status] = None,  family: Optional[str] = None) -> List["TrackerWithBots"]:

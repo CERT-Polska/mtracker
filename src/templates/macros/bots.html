@@ -13,7 +13,7 @@
   </tr>
   {% for entity in rows %}
   <tr>
-    <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.family}}_{{entity.bot_id}}</a></td>
+    <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.name}}</a></td>
     <td><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></td>
     <td>{{cap_length(entity.last_error, 60)}}</td>
     <td>

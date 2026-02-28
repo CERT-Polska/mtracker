@@ -12,7 +12,7 @@
   {% for entity in rows %}
   <tr>
     <td><a href="{{url_for('task', task_id=entity.task_id)}}">{{showtime(entity.report_time)}}</a></td>
-    <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.family}}_{{entity.bot_id}}</a></td>
+    <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.bot_name}}</a></td>
     <td>
       {% if entity.fail_reason %}
       {{cap_length(entity.fail_reason, 60)}}
