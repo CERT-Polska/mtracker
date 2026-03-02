@@ -46,6 +46,7 @@ mwdb = utils.get_mwdb()
 
 redis_url = f"redis://{app_config.redis.host}:{app_config.redis.port}"
 app.config["RQ_DASHBOARD_REDIS_URL"] = redis_url
+rq_dashboard.web.setup_rq_connection(app)
 app.register_blueprint(rq_dashboard.blueprint, url_prefix="/rq")
 
 
