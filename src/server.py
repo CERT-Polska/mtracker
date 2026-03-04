@@ -418,13 +418,6 @@ def bot_action_api(bot_id: int) -> Response:
     return jsonify({})
 
 
-@app.route("/bots/<int:bot_id>", methods=["POST"])
-def bot_action_form(bot_id: int) -> Response:
-    action = request.form["action"]
-    bot_action(bot_id, action)
-    return redirect(url_for("bot", bot_id=bot_id))
-
-
 @app.route("/api/bots/<int:bot_id>/tasks")
 def get_bot_tasks(bot_id: int) -> Response:
     status = request.args.get("status")
