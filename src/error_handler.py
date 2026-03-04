@@ -15,7 +15,13 @@ def report_crashed(job, exc_type, exc_value, tb):
     task_id = job.kwargs["task_id"]
 
     # save short exception as "last error" and store the full exception in the logfile
-    exc_full_text = "".join(traceback.format_exception(exc_type, exc_value, tb))
+    try:
+        exc_full_text = "".join(traceback.format_exception(exc_type, exc_value, tb))
+    except AttributeError:
+        # Fix for rq bug - remove when fixed upstream
+        # https://github.com/rq/rq/issues/2229
+        exc_full_text = ''.join(tb.format())
+
     if app_config.log.provider == "filesystem":
         with model.Task.get_log_path(task_id).open("a") as f:
             f.write(exc_full_text)
