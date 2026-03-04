@@ -16,7 +16,7 @@
     <td><a href="{{url_for('bot', bot_id=entity.bot_id)}}">{{entity.name}}</a></td>
     <td><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></td>
     <td>{{cap_length(entity.last_error, 60)}}</td>
-    <td>
+    <td id="status-{{entity.bot_id}}">
       {{show_bot_last_logs(entity.status, entity.bot_id)}}
       {% if entity.status == 'failing' %}({{entity.failing_spree}}){% endif %}
     </td>
@@ -26,16 +26,25 @@
       {% endif %}
     </td>
     <td>
-      <form action="/bots/{{entity.bot_id}}" method="post" class="text-center mb-0">
-        <span class="btn-group btn-group-xs" role="group">
-          {% if entity.status != 'archived' %}
-          <input type="submit" value="archive" name="action" class="btn btn-default">
-          {% endif %}
-          {% if entity.status != 'inprogress' %}
-          <input type="submit" value="rerun" name="action" class="btn btn-default">
-          {% endif %}
-        </span>
-      </form>
+      <span class="btn-group btn-group-xs" role="group">
+        {% if entity.status != 'archived' %}
+        <button
+            class="btn btn-default action-btn"
+            data-bot-id="{{entity.bot_id}}"
+            data-action="archive">
+            archive
+        </button>
+        {% endif %}
+
+        {% if entity.status != 'inprogress' %}
+        <button
+            class="btn btn-default action-btn"
+            data-bot-id="{{entity.bot_id}}"
+            data-action="rerun">
+            rerun
+        </button>
+        {% endif %}
+      </span>
     </td>
   </tr>
   {% endfor %}

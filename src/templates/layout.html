@@ -26,7 +26,7 @@
           </div>
         </nav>
 
-        <!-- modal features -->
+        <!-- for modal windows -->
         <div id="logModal" class="modal fade" tabindex="-1">
           <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -42,37 +42,62 @@
         </div>
 
         <script>
-        $(document).on("click", ".show-logs", function(e) {
-            e.preventDefault();
+          // for modal windows
+          $(document).on("click", ".show-logs", function(e) {
+              e.preventDefault();
 
-            // Only one of task-id and bot-id can be set
-            var taskId = $(this).data("task-id");
-            var botId = $(this).data("bot-id");
+              // Only one of task-id and bot-id can be set
+              var taskId = $(this).data("task-id");
+              var botId = $(this).data("bot-id");
 
-            var log_url;
-            if (taskId !== undefined) {
-              log_url = "/api/tasks/" + taskId + "/log";
-            } else if (botId !== undefined) {
-              log_url = "/api/bots/" + botId + "/log";
-            } else {
-              console.error("Either task-id or bot-id must be set");
-              return;
-            }
+              var log_url;
+              if (taskId !== undefined) {
+                log_url = "/api/tasks/" + taskId + "/log";
+              } else if (botId !== undefined) {
+                log_url = "/api/bots/" + botId + "/log";
+              } else {
+                console.error("Either task-id or bot-id must be set");
+                return;
+              }
 
-            $("#logContent").text("Loading...");
-            $("#logModal").modal("show");
+              $("#logContent").text("Loading...");
+              $("#logModal").modal("show");
 
-            $.get(log_url)
-                .done(function(response) {
-                    $("#logContent").text(response.data);
-                })
-                .fail(function() {
-                    $("#logContent").text("Failed to load log.");
-                });
-        });
+              $.get(log_url)
+                  .done(function(response) {
+                      $("#logContent").text(response.data);
+                  })
+                  .fail(function() {
+                      $("#logContent").text("Failed to load log.");
+                  });
+          });
+
+          // for action buttons
+          $(function () {
+            $(".action-btn").on("click", function () {
+              const $btn = $(this);
+              const botId = $btn.data("bot-id");
+              const $row = $btn.closest("tr");
+              const $status = $("#status-" + botId);
+
+              $row.find(".action-btn").prop("disabled", true);
+              $status.html('<span class="text-warning">processing...</span>');
+
+              $.ajax({
+                url: "/api/bots/" + botId,
+                method: "POST",
+                contentType: "application/json",
+                data: JSON.stringify({ action: $btn.data("action") }),
+                success: function (data) {
+                  $status.html('updated');
+                },
+                error: function () {
+                  $status.html('<span class="text-danger">error</span>');
+                }
+              });
+            });
+          });
         </script>
-
-        <!-- end modal features -->
 
         <div id="real-content" class="well">
           {% block content %}
