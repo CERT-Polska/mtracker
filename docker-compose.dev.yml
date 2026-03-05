@@ -11,6 +11,17 @@ services:
     - "127.0.0.1:5432:5432"
     volumes:
     - "./data/postgres:/var/lib/postgresql/data"
+  scheduler:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/scheduler.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+    links:
+    - redis
+    - postgres
   web:
     restart: always
     build:
@@ -21,7 +32,7 @@ services:
       - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
       - REDIS_HOST=redis
       - LOG_DIR=/opt/logs
-      - PROXY_DEFAULT_PROXY
+      - PROXY_DEFAULT
       - PROXY_URL
       - PROXY_METHOD
       - PROXY_PATH
@@ -35,6 +46,29 @@ services:
     links:
     - redis
     - postgres
+  worker:
+    restart: always
+    build:
+      context: .
+      dockerfile: deploy/docker/worker.Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://mtracker3:postgres@postgres:5432/mtracker3
+      - REDIS_HOST=redis
+      - LOG_DIR=/opt/logs
+      - PROXY_DEFAULT
+      - PROXY_URL
+      - PROXY_METHOD
+      - PROXY_PATH
+      - MWDB_URL
+      - MWDB_TOKEN
+    volumes:
+    - "./data/logs:/opt/logs"
+    - "./src:/usr/src/app/src"
+    - "./src/private_modules:/usr/src/app/src/modules"
+    links:
+    - redis
+    - postgres
+    command: bash -c "pip install -r /usr/src/app/src/modules/requirements.txt; python3 -m mtracker.worker /usr/src/app/src/modules"
   redis:
     restart: always
     image: redis
