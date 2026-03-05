@@ -39,10 +39,11 @@ def main() -> int:
     )
     args = parser.parse_args()
 
-    trackers = ModuleManager.load(args.modules)
-
     if not args.file and not args.hash:
         logging.error("Either --hash or --file is mandatory")
+        return 1
+
+    trackers = ModuleManager.load(args.modules)
 
     if args.file:
         with open(args.file, "r") as f:
@@ -85,20 +86,22 @@ def main() -> int:
     cls = trackers[config_type]
     mod = cls(config=static_config, used_proxy=connection_string, state={})
 
-    logging.info("Executing module")
-    if isinstance(mod, ModuleBase):
-        task_result = mod.execute_task()
+    if not isinstance(mod, ModuleBase):
+        logging.error("%s is not a valid ModuleBase!")
+        return 1
 
-        # Reporting the results according to the --out arg
+    task_result = mod.execute_task()
+
+    # Reporting the results according to the --out arg
+    report_fcn = report_fetch.report_stdout
+    if args.out == "stdout":
         report_fcn = report_fetch.report_stdout
-        if args.out == "stdout":
-            report_fcn = report_fetch.report_stdout
-        elif args.out == "db":
-            report_fcn = report_fetch.report_mwdb
-        elif args.out == "file":
-            report_fcn = report_fetch.report_file
+    elif args.out == "db":
+        report_fcn = report_fetch.report_mwdb
+    elif args.out == "file":
+        report_fcn = report_fetch.report_file
 
-        report_fcn(config_hash, task_result.results)
+    report_fcn(config_hash, task_result.results)
 
     return 0
 
