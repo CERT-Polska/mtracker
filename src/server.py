@@ -271,6 +271,8 @@ def tracker_action(tracker_id: int, action: str) -> None:
         bot_ids = [b.bot_id for b in bots]
 
         if action == "resetSpree":
+            # This action is unclear and we should deprecate it.
+            # It is removed from the web UI right now
             model.Bot.clear_sprees(cur=cur, bot_ids=bot_ids)
         elif action == "archive":
             model.Bot.set_statuses(
@@ -399,6 +401,8 @@ def bot_action(bot_id: int, action: str) -> None:
     with model.database_connection() as connection:
         cur = connection.cursor()
         if action == "resetSpree":
+            # This action is unclear and we should deprecate it.
+            # It is removed from the web UI right now
             model.Bot.clear_sprees(cur=cur, bot_ids=[bot_id])
         elif action == "archive":
             model.Bot.set_statuses(

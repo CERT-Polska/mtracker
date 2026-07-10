@@ -7,12 +7,31 @@
 {% block content %}
 <h1 class="text-center">Bot {{entity.name}}</h1>
 
-<form action="/bots/{{entity.bot_id}}" method="post" class="text-center" style="margin-bottom: 30px">
+<form class="text-center action-form" style="margin-bottom: 30px">
   <div class="btn-group" role="group">
-    <input type="submit" value="resetSpree" name="action" class="btn btn-default">
-    <input type="submit" value="archive" name="action" class="btn btn-default">
-    <input type="submit" value="revive" name="action" class="btn btn-default">
-    <input type="submit" value="rerun" name="action" class="btn btn-default">
+    <button
+      type="button"
+      class="btn btn-default action-btn"
+      data-bot-id="{{entity.bot_id}}"
+      data-action="archive">
+      archive
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-default action-btn"
+      data-bot-id="{{entity.bot_id}}"
+      data-action="revive">
+      revive
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-default action-btn"
+      data-bot-id="{{entity.bot_id}}"
+      data-action="rerun">
+      rerun
+    </button>
   </div>
 </form>
 
@@ -24,7 +43,7 @@
   <dd><a href="{{url_for('bots', family=entity.family)}}">{{entity.family}}</a></dd>
 
   <dt>status</dt>
-  <dd>
+  <dd id="status-{{entity.bot_id}}">
     {% if tasks %}
     {{show_task_logs(entity.status, tasks[0].task_id)}}
     {% else %}
