@@ -78,11 +78,13 @@
 <pre class="pre-scrollable"><code>{{last_task_log}}</code></pre>
 {% endif %}
 
-<h2>Last task log</h2>
+{% if entity.state %}
+<h2>Bot state</h2>
 <pre id="json-renderer"></pre>
 <script>
 const data = {{entity.state | tojson}};
 $('#json-renderer').jsonViewer(data);
 </script>
+{% endif %}
 
 {% endblock %}
