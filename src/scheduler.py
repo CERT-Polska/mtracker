@@ -67,7 +67,7 @@ def run_bot_task(bot_id: int) -> Optional[str]:
             "mtracker.track.execute",
             kwargs={
                 "static_config": static_config,
-                "saved_state": json.loads(bot.state),
+                "saved_state": bot.state,
                 "proxy": selected_proxy.connection_string,
                 "bot_id": bot.bot_id,
                 "task_id": task_id,

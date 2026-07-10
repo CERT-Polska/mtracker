@@ -397,7 +397,7 @@ class Bot:
         self.bot_id = bot_id
         self.tracker_id = tracker_id
         self.status = status
-        self.state = state
+        self.state = json.loads(state)
         self.failing_spree = failing_spree
         self.next_execution = next_execution
         self.country = country
@@ -469,7 +469,7 @@ class Bot:
             "running": self.status == Status.INPROGRESS,
             "nextExecution": self.next_execution.isoformat(),
             "lastError": self.last_error,
-            "state": self.state,
+            "state": json.dumps(self.state),
             "name": self.name,
             "family": self.family,
             "binaries": [b.serialize() for b in self.binaries],

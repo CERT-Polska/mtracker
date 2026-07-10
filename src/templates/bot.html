@@ -4,6 +4,12 @@
 {% from "macros/utils.html" import showtime %}
 {% from "macros/status.html" import show_task_logs %}
 
+{% block head %}
+<script src="/js/jquery.json-viewer.js"></script>
+<link rel="stylesheet" href="/css/jquery.json-viewer.css">
+{% endblock %}
+
+
 {% block content %}
 <h1 class="text-center">Bot {{entity.name}}</h1>
 
@@ -71,4 +77,12 @@
 <h2>Last task log</h2>
 <pre class="pre-scrollable"><code>{{last_task_log}}</code></pre>
 {% endif %}
+
+<h2>Last task log</h2>
+<pre id="json-renderer"></pre>
+<script>
+const data = {{entity.state | tojson}};
+$('#json-renderer').jsonViewer(data);
+</script>
+
 {% endblock %}
